@@ -1,0 +1,35 @@
+# Customer Success & Retention Squad
+# Dedicated squad for post-sales excellence, customer onboarding, and retention.
+
+name: customer-success
+version: 1.0.0
+description: Squad focado em excelência no pós-venda, onboarding de clientes, documentação de FAQ e redução de Churn.
+
+author: Diego <microsaasfactory@gmail.com>
+license: Proprietary
+slashPrefix: cs
+
+aios:
+  minVersion: "2.1.0"
+  type: squad
+
+components:
+  agents:
+    - atlas-onboarding.md
+    - hugh-retention.md
+    - sage-knowledge.md
+  tasks:
+    - setup-notion-faq.md
+    - design-onboarding-workflow.md
+  workflows:
+    - cs-success-system.md
+
+config:
+  extends: pro
+
+tags:
+  - customer-success
+  - onboarding
+  - retention
+  - documentation
+  - notion

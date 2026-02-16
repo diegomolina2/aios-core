@@ -1,0 +1,41 @@
+# Marketing & Innovation Squad
+# Specialized squad for high-conversion marketing and AI-driven innovation
+
+name: marketing-innovation
+version: 1.0.0
+description: Squad focado em estratégias de marketing de resposta direta, funis de venda e inovação em SaaS.
+
+author: Diego <microsaasfactory@gmail.com>
+license: Proprietary
+slashPrefix: marketing
+
+aios:
+  minVersion: "2.1.0"
+  type: squad
+
+components:
+  agents:
+    - titan-cro.md
+    - vera-cmo.md
+    - spark-creative.md
+    - viper-automation.md
+    - copy/jon-benson.md
+    - copy/dan-kennedy.md
+    - copy/russell-brunson.md
+    - copy/gary-halbert.md
+    - copy/eugene-schwartz.md
+  tasks:
+    - audit-landing-page.md
+    - rewrite-copy-bundle.md
+    - launch-founder-offer.md
+  workflows:
+    - marketing-squad.md
+
+config:
+  extends: pro
+
+tags:
+  - marketing
+  - sales
+  - copywriting
+  - conversion
