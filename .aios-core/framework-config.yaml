@@ -123,14 +123,22 @@ ide_sync_system:
       enabled: true
       path: ".claude/commands/AIOS/agents"
       format: "full-markdown-yaml"
+    codex:
+      enabled: true
+      path: ".codex/agents"
+      format: "full-markdown-yaml"
+    gemini:
+      enabled: true
+      path: ".gemini/rules/AIOS/agents"
+      format: "full-markdown-yaml"
+    github-copilot:
+      enabled: true
+      path: ".github/agents"
+      format: "full-markdown-yaml"
     cursor:
       enabled: true
       path: ".cursor/rules/agents"
       format: "condensed-rules"
-    windsurf:
-      enabled: false
-      path: ".windsurf/rules/agents"
-      format: "xml-tagged-markdown"
     antigravity:
       enabled: true
       path: ".antigravity/rules/agents"
@@ -140,3 +148,11 @@ ide_sync_system:
     strict_mode: true
     fail_on_drift: true
     fail_on_orphaned: false
+
+# --- Template Override Defaults (Section 13) ---
+# Override in project-config.yaml to customize story template rendering.
+# null = use template default order; [] = no optional sections.
+template_overrides:
+  story:
+    sections_order: null
+    optional_sections: []

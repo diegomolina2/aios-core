@@ -16,8 +16,8 @@
  * - Use `npx aios-core` which routes through bin/aios.js to the new wizard
  * - Do NOT call this file directly
  *
- * Supported IDEs (7 total):
- * - Claude Code, Cursor, Windsurf, Roo Code, Cline, Gemini CLI, GitHub Copilot
+ * Supported IDEs (4 total):
+ * - Claude Code, Cursor, Gemini CLI, GitHub Copilot
  */
 
 const path = require('path');
@@ -85,7 +85,7 @@ function resolveAiosCoreModule(modulePath) {
     throw new Error(
       `Cannot find AIOS Core module: ${modulePath}\n` +
         `Searched: ${aiosCoreModule}\n` +
-        'Please ensure @synkra/aios-core is installed correctly.'
+        'Please ensure aios-core is installed correctly.'
     );
   }
 
@@ -404,19 +404,15 @@ async function main() {
       message: chalk.white('Which IDE(s) will you use?'),
       choices: [
         {
-          name: '  Claude Code ' + chalk.blue('(v2.1)') + chalk.gray(' - Recommended'),
+          name: '  Claude Code ' + chalk.blue('(v4)') + chalk.gray(' - Recommended'),
           value: 'claude',
           checked: true,
         },
-        { name: '  Cursor ' + chalk.blue('(v2.1)'), value: 'cursor' },
-        { name: '  Windsurf ' + chalk.blue('(v2.1)'), value: 'windsurf' },
-        { name: '  Trae ' + chalk.blue('(v2.1)'), value: 'trae' },
-        { name: '  Roo Code ' + chalk.blue('(v2.1)'), value: 'roo' },
-        { name: '  Cline ' + chalk.blue('(v2.1)'), value: 'cline' },
-        { name: '  Gemini CLI ' + chalk.blue('(v2.1)'), value: 'gemini' },
-        { name: '  GitHub Copilot ' + chalk.blue('(v2.1)'), value: 'github-copilot' },
+        { name: '  Cursor ' + chalk.blue('(v4)'), value: 'cursor' },
+        { name: '  Gemini CLI ' + chalk.blue('(v4)'), value: 'gemini' },
+        { name: '  GitHub Copilot ' + chalk.blue('(v4)'), value: 'github-copilot' },
         {
-          name: '  AntiGravity ' + chalk.blue('(v2.1)') + chalk.gray(' - Google AI IDE'),
+          name: '  AntiGravity ' + chalk.blue('(v4)') + chalk.gray(' - Google AI IDE'),
           value: 'antigravity',
         },
         new inquirer.Separator(chalk.gray('─'.repeat(40))),
@@ -561,10 +557,6 @@ async function main() {
     const ideRulesMap = {
       claude: { source: 'claude-rules.md', target: '.claude/CLAUDE.md' },
       cursor: { source: 'cursor-rules.md', target: '.cursor/rules.md' },
-      windsurf: { source: 'windsurf-rules.md', target: '.windsurf/rules.md' },
-      trae: { source: 'trae-rules.md', target: '.trae/rules.md' },
-      roo: { source: 'roo-rules.md', target: '.roomodes' },
-      cline: { source: 'cline-rules.md', target: '.cline/rules.md' },
       gemini: { source: 'gemini-rules.md', target: '.gemini/rules.md' },
       'github-copilot': { source: 'copilot-rules.md', target: '.github/chatmodes/aios-agent.md' },
       antigravity: { source: 'antigravity-rules.md', target: '.antigravity/rules.md' },
@@ -604,7 +596,7 @@ async function main() {
       : [];
 
     // Step 2: Install AIOS CORE agents and tasks for Claude Code
-    // v2.1: Agents and tasks are in development/ module
+    // v4: Agents and tasks are in development/ module
     if (ides.includes('claude')) {
       const coreAgentsTarget = path.join(
         context.projectRoot,
@@ -655,10 +647,13 @@ This directory contains the core AIOS-FullStack agents and tasks.
 See .aios-core/user-guide.md for complete documentation.
 `
       );
+
+      // Silent statusline setup (graceful skip if user already has one)
+      await setupGlobalStatuslineLegacy(sourceCoreDir);
     }
 
     // Step 3: Install AIOS CORE agents for Cursor
-    // v2.1: Agents are in development/ module
+    // v4: Agents are in development/ module
     // INS-2 Performance: Uses cached agent files list
     if (ides.includes('cursor')) {
       const cursorRulesTarget = path.join(
@@ -703,10 +698,10 @@ See .aios-core/user-guide.md for complete documentation.
       );
     }
 
-    // Step 4: Install AIOS CORE agents for other IDEs (Trae, Cline, Gemini, AntiGravity)
-    // v2.1: Agents are in development/ module
+    // Step 4: Install AIOS CORE agents for other IDEs (Gemini, AntiGravity)
+    // v4: Agents are in development/ module
     // INS-2 Performance: Uses cached agent files list
-    const otherIdeInstalls = ['trae', 'cline', 'gemini', 'antigravity'];
+    const otherIdeInstalls = ['gemini', 'antigravity'];
     for (const ide of otherIdeInstalls) {
       if (ides.includes(ide)) {
         const ideRulesDir = ide === 'gemini' ? '.gemini' : `.${ide}`;
@@ -736,34 +731,8 @@ See .aios-core/user-guide.md for complete documentation.
       }
     }
 
-    // Step 5: Install Roo Code modes
-    // v2.1: Agents are in development/ module
-    // INS-2 Performance: Uses cached agent files list
-    if (ides.includes('roo')) {
-      const rooModesPath = path.join(context.projectRoot, '.roomodes');
-
-      if (cachedAgentFiles.length > 0) {
-        // Create .roomodes JSON file (using cached list)
-        const roomodes = {
-          customModes: cachedAgentFiles.map((f) => {
-            const agentName = f.replace('.md', '');
-            return {
-              slug: `bmad-${agentName}`,
-              name: `AIOS ${agentName.charAt(0).toUpperCase() + agentName.slice(1)}`,
-              roleDefinition: `AIOS-FullStack ${agentName} agent - see .aios-core/agents/${f}`,
-              groups: ['aios'],
-              source: 'project',
-            };
-          }),
-        };
-
-        await fse.writeFile(rooModesPath, JSON.stringify(roomodes, null, 2));
-        console.log(chalk.green('✓') + ` Roo Code modes installed (${cachedAgentFiles.length} modes)`);
-      }
-    }
-
-    // Step 6: Install GitHub Copilot chat modes
-    // v2.1: Agents are in development/ module
+    // Step 5: Install GitHub Copilot chat modes
+    // v4: Agents are in development/ module
     // INS-2 Performance: Uses cached agent files list
     if (ides.includes('github-copilot')) {
       const copilotModesDir = path.join(context.projectRoot, '.github', 'chatmodes');
@@ -788,7 +757,6 @@ See .aios-core/user-guide.md for complete documentation.
 
   // Step 7: Squads (CHECKBOX with visual)
   // Try multiple locations for squads (npm package vs local development vs npx)
-  // Also check legacy expansion-packs/ for backward compatibility
   // __dirname is the 'bin/' directory of the package, so '..' gives us the package root
   const packageRoot = path.resolve(__dirname, '..');
 
@@ -798,27 +766,16 @@ See .aios-core/user-guide.md for complete documentation.
     // Secondary: context-based framework location - squads/
     path.join(context.frameworkLocation, 'squads'),
     // Tertiary: installed in project's node_modules - squads/
-    path.join(context.projectRoot, 'node_modules', '@synkra/aios-core', 'squads'),
+    path.join(context.projectRoot, 'node_modules', 'aios-core', 'squads'),
     path.join(context.projectRoot, 'node_modules', '@aios', 'fullstack', 'squads'),
-    // Legacy fallback (deprecated): expansion-packs/
-    path.join(packageRoot, 'expansion-packs'),
-    path.join(context.frameworkLocation, 'expansion-packs'),
-    path.join(context.projectRoot, 'node_modules', '@synkra/aios-core', 'expansion-packs'),
-    path.join(context.projectRoot, 'node_modules', '@aios', 'fullstack', 'expansion-packs'),
   ];
 
   let sourceSquadsDir = null;
-  let usingLegacyDir = false;
   for (const dir of possibleSquadsDirs) {
     if (fs.existsSync(dir)) {
       sourceSquadsDir = dir;
-      usingLegacyDir = dir.includes('expansion-packs');
       break;
     }
-  }
-
-  if (usingLegacyDir) {
-    console.log(chalk.yellow('⚠ Note: Using legacy expansion-packs/ directory. Consider migrating to squads/'));
   }
 
   const availableSquads = [];
@@ -1056,7 +1013,7 @@ See .aios-core/user-guide.md for complete documentation.
   }
 
   // Show other IDE installations
-  const otherInstalledIdes = ['windsurf', 'trae', 'cline', 'gemini', 'antigravity'].filter((ide) =>
+  const otherInstalledIdes = ['gemini', 'antigravity'].filter((ide) =>
     ides.includes(ide)
   );
   for (const ide of otherInstalledIdes) {
@@ -1069,10 +1026,6 @@ See .aios-core/user-guide.md for complete documentation.
         ide.slice(1) +
         ' configuration'
     );
-  }
-
-  if (ides.includes('roo')) {
-    console.log('  ' + chalk.dim('.roomodes') + '            - Roo Code mode definitions');
   }
 
   if (ides.includes('github-copilot')) {
@@ -1092,16 +1045,6 @@ See .aios-core/user-guide.md for complete documentation.
     console.log('  ' + chalk.yellow('Cursor:'));
     console.log('    • Agent rules auto-loaded from .cursor/rules/');
     console.log('    • Use @agent-name to activate agents in chat');
-  }
-
-  if (ides.includes('windsurf') || ides.includes('trae') || ides.includes('cline')) {
-    console.log('  ' + chalk.yellow('Windsurf/Trae/Cline:'));
-    console.log('    • Use @agent-name to activate agents in chat');
-  }
-
-  if (ides.includes('roo')) {
-    console.log('  ' + chalk.yellow('Roo Code:'));
-    console.log('    • Select agent mode from status bar mode selector');
   }
 
   if (ides.includes('gemini')) {
@@ -1187,6 +1130,95 @@ async function savePMConfig(pmTool, config, projectRoot) {
   const configPath = path.join(projectRoot, '.aios-pm-config.yaml');
   // INS-2 Performance: Use async write
   await fse.writeFile(configPath, yaml.dump(pmConfigData));
+}
+
+/**
+ * Setup global statusline for Claude Code (legacy installer version)
+ * Graceful skip: returns silently if user already has a statusLine configured.
+ * @param {string} sourceCoreDir - Path to installed .aios-core directory
+ */
+async function setupGlobalStatuslineLegacy(sourceCoreDir) {
+  const os = require('os');
+  const homeDir = os.homedir();
+  const globalSettingsPath = path.join(homeDir, '.claude', 'settings.json');
+
+  // Read existing global settings
+  let settings = {};
+  try {
+    if (fs.existsSync(globalSettingsPath)) {
+      settings = JSON.parse(fs.readFileSync(globalSettingsPath, 'utf8'));
+    }
+  } catch {
+    settings = {};
+  }
+
+  // GRACEFUL SKIP: User already has a statusLine
+  if (settings.statusLine) {
+    return;
+  }
+
+  // Source templates
+  const templatesDir = path.join(sourceCoreDir, 'product', 'templates', 'statusline');
+  const scriptSource = path.join(templatesDir, 'statusline-script.js');
+  const hookSource = path.join(templatesDir, 'track-agent.sh');
+
+  if (!fs.existsSync(scriptSource) || !fs.existsSync(hookSource)) {
+    return;
+  }
+
+  // Target paths
+  const scriptTarget = path.join(homeDir, '.claude', 'statusline-script.js');
+  const hookTarget = path.join(homeDir, '.claude', 'hooks', 'track-agent.sh');
+
+  try {
+    await fse.ensureDir(path.join(homeDir, '.claude', 'hooks'));
+    await fse.ensureDir(path.join(homeDir, '.claude', 'session-cache'));
+    await fse.copy(scriptSource, scriptTarget);
+    await fse.copy(hookSource, hookTarget);
+  } catch {
+    return;
+  }
+
+  // Add statusLine + hook to settings
+  const scriptPathEscaped = scriptTarget.replace(/\\/g, '\\\\');
+  settings.statusLine = {
+    type: 'command',
+    command: `node "${scriptPathEscaped}"`,
+  };
+
+  if (!settings.hooks) {
+    settings.hooks = {};
+  }
+  if (!Array.isArray(settings.hooks.UserPromptSubmit)) {
+    settings.hooks.UserPromptSubmit = [];
+  }
+
+  const hookPathEscaped = hookTarget.replace(/\\/g, '\\\\');
+  const alreadyHasTrackAgent = settings.hooks.UserPromptSubmit.some(entry => {
+    if (Array.isArray(entry.hooks)) {
+      return entry.hooks.some(h => h.command && h.command.includes('track-agent'));
+    }
+    return entry.command && entry.command.includes('track-agent');
+  });
+
+  if (!alreadyHasTrackAgent) {
+    settings.hooks.UserPromptSubmit.push({
+      matcher: '',
+      hooks: [
+        {
+          type: 'command',
+          command: `bash "${hookPathEscaped}"`,
+        },
+      ],
+    });
+  }
+
+  try {
+    await fse.ensureDir(path.dirname(globalSettingsPath));
+    await fse.writeFile(globalSettingsPath, JSON.stringify(settings, null, 2), 'utf8');
+  } catch {
+    // Silent failure — statusline is non-critical
+  }
 }
 
 // Run installer with error handling

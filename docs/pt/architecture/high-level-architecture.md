@@ -1,6 +1,6 @@
 <!-- Tradução: PT-BR | Original: /docs/en/architecture/high-level-architecture.md | Sincronização: 2026-01-26 -->
 
-# Arquitetura de Alto Nível do AIOS v2.1
+# Arquitetura de Alto Nível do AIOS v4
 
 > 🌐 [EN](../../architecture/high-level-architecture.md) | **PT** | [ES](../../es/architecture/high-level-architecture.md)
 
@@ -29,7 +29,7 @@
 
 **AIOS (AI Operating System)** é um framework sofisticado para orquestração de agentes de IA, workers e humanos em fluxos de trabalho complexos de desenvolvimento de software. A versão 2.1 introduz uma arquitetura modular com 4 módulos, estratégia multi-repositório e quality gates de 3 camadas.
 
-### Capacidades Principais v2.1
+### Capacidades Principais v4.2
 
 | Capacidade                    | Descrição                                                                         |
 | ----------------------------- | --------------------------------------------------------------------------------- |
@@ -49,7 +49,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                     FRAMEWORK AIOS v2.1                                 │
+│                     FRAMEWORK AIOS v4                                 │
 │                     ═══════════════════                                 │
 │                                                                         │
 │   ┌─────────────────────────────────────────────────────────────────┐   │
@@ -152,7 +152,7 @@
 │   ┌────────────────────┐     ┌────────────────────┐                    │
 │   │  SynkraAI/         │     │  SynkraAI/         │                    │
 │   │  aios-core         │     │  aios-squads       │                    │
-│   │  (Commons Clause)  │◄────│  (MIT)             │                    │
+│   │  (MIT)  │◄────│  (MIT)             │                    │
 │   │                    │     │                    │                    │
 │   │  • Core Framework  │     │  • ETL Squad       │                    │
 │   │  • 11 Agentes Base │     │  • Creator Squad   │                    │
@@ -190,7 +190,7 @@
 
 | Pacote                | Registry    | Licença        |
 | --------------------- | ----------- | -------------- |
-| `@aios/core`          | npm público | Commons Clause |
+| `@aios/core`          | npm público | MIT            |
 | `@aios/squad-etl`     | npm público | MIT            |
 | `@aios/squad-creator` | npm público | MIT            |
 | `@aios/squad-mmos`    | npm público | MIT            |
@@ -214,10 +214,10 @@
 
 ## Estrutura de Diretórios
 
-### Estrutura Atual (v2.1)
+### Estrutura Atual (v4)
 
 ```
-@synkra/aios-core/
+aios-core/
 ├── .aios-core/                    # Camada do Framework
 │   ├── core/                      # Módulo Core (fundação)
 │   │   ├── config/                # Gerenciamento de configuração

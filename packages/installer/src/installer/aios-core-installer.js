@@ -24,11 +24,11 @@ function getAiosCoreSourcePath() {
 
 /**
  * Folders to copy from .aios-core
- * Includes both v2.1 modular structure and v2.0 legacy flat structure for compatibility
+ * Includes both v4 modular structure and v2.0 legacy flat structure for compatibility
  * @constant {string[]}
  */
 const FOLDERS_TO_COPY = [
-  // v2.1 Modular Structure (Story 2.15)
+  // v4.0.4 Modular Structure (Story 2.15)
   'core',           // Framework utilities, config, registry, migration
   'development',    // Agents, tasks, workflows, scripts, personas
   'product',        // Templates, checklists, cli, api
@@ -324,9 +324,11 @@ async function installAiosCore(options = {}) {
     // BUG-2 fix (INS-1): Install .aios-core dependencies after copy
     // The copied .aios-core/package.json has dependencies (js-yaml, execa, etc.)
     // that must be installed for the activation pipeline to work
+    // INS-4.12: Track dep install success for bootstrap guard
     const aiosCorePackageJson = path.join(targetAiosCore, 'package.json');
+    result.aiosCoreDepsInstalled = false;
     if (await fs.pathExists(aiosCorePackageJson)) {
-      spinner.text = 'Installing .aios-core dependencies (js-yaml, etc.)...';
+      spinner.text = 'Installing .aios-core dependencies (js-yaml, fast-glob, etc.)...';
       try {
         const { exec } = require('child_process');
         const { promisify } = require('util');
@@ -335,6 +337,7 @@ async function installAiosCore(options = {}) {
           cwd: targetAiosCore,
           timeout: 60000,
         });
+        result.aiosCoreDepsInstalled = true;
         spinner.succeed('Installed .aios-core dependencies');
         spinner.start('Finishing installation...');
       } catch (depError) {

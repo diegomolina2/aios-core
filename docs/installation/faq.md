@@ -23,7 +23,7 @@
 
 ### Q1: Why npx instead of npm install -g?
 
-**Answer:** We recommend `npx @synkra/aios-core install` over global installation for several reasons:
+**Answer:** We recommend `npx aios-core install` over global installation for several reasons:
 
 1. **Always Latest Version**: npx fetches the latest version automatically
 2. **No Global Pollution**: Doesn't add to your global npm packages
@@ -34,8 +34,8 @@
 **If you prefer global installation:**
 
 ```bash
-npm install -g @synkra/aios-core
-@synkra/aios-core install
+npm install -g aios-core
+aios-core install
 ```
 
 ---
@@ -69,7 +69,7 @@ npm --version   # Should be 9+
 
 ```bash
 cd /path/to/existing-project
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 The installer will:
@@ -91,14 +91,14 @@ The installer will:
 | ----------------------- | ------------- |
 | **First-time install**  | 2-5 minutes   |
 | **Update existing**     | 1-2 minutes   |
-| **Expansion pack only** | 30-60 seconds |
+| **Starter squad only** | 30-60 seconds |
 
 Factors affecting installation time:
 
 - Internet connection speed
 - npm cache status
 - Number of IDEs selected
-- Expansion packs selected
+- Starter squads selected
 
 ---
 
@@ -141,20 +141,20 @@ your-project/
 
 ```bash
 # Update via npx (recommended)
-npx @synkra/aios-core update
+npx aios-core update
 
 # Or reinstall latest
-npx @synkra/aios-core install --force-upgrade
+npx aios-core install --force-upgrade
 
 # Check current version
-npx @synkra/aios-core status
+npx aios-core status
 ```
 
 **What gets updated:**
 
 - `.aios-core/` files (agents, tasks, templates)
 - IDE configurations
-- Expansion packs (if installed)
+- Starter squads (if installed)
 
 **What is preserved:**
 
@@ -170,15 +170,15 @@ npx @synkra/aios-core status
 
 | Update Type          | Frequency   | Command                     |
 | -------------------- | ----------- | --------------------------- |
-| **Security patches** | Immediately | `npx @synkra/aios-core update` |
-| **Minor updates**    | Monthly     | `npx @synkra/aios-core update` |
+| **Security patches** | Immediately | `npx aios-core update` |
+| **Minor updates**    | Monthly     | `npx aios-core update` |
 | **Major versions**   | Quarterly   | Review changelog first      |
 
 **Check for updates:**
 
 ```bash
-npm show @synkra/aios-core version
-npx @synkra/aios-core status
+npm show aios-core version
+npx aios-core status
 ```
 
 ---
@@ -190,7 +190,7 @@ npx @synkra/aios-core status
 **Option 1: Reinstall specific version**
 
 ```bash
-npx @synkra/aios-core@1.1.0 install --force-upgrade
+npx aios-core@1.1.0 install --force-upgrade
 ```
 
 **Option 2: Use Git to restore**
@@ -220,7 +220,7 @@ mv .aios-core.backup .aios-core
 
 ```bash
 # Install once with internet
-npx @synkra/aios-core install
+npx aios-core install
 
 # Package for offline use
 tar -czvf aios-offline.tar.gz .aios-core/ .claude/ .cursor/
@@ -252,7 +252,7 @@ tar -xzvf aios-offline.tar.gz
 
    ```bash
    # Install and package
-   npx @synkra/aios-core install
+   npx aios-core install
    cd your-project
    tar -czvf aios-transfer.tar.gz .aios-core/ .claude/ .cursor/ docs/
    ```
@@ -280,10 +280,6 @@ tar -xzvf aios-offline.tar.gz
 | ------------------ | ------------ | ------------------- |
 | **Claude Code**    | Full Support | `/dev`, `/qa`, etc. |
 | **Cursor**         | Full Support | `@dev`, `@qa`, etc. |
-| **Windsurf**       | Full Support | `@dev`, `@qa`, etc. |
-| **Trae**           | Full Support | `@dev`, `@qa`, etc. |
-| **Roo Code**       | Full Support | Mode selector       |
-| **Cline**          | Full Support | `@dev`, `@qa`, etc. |
 | **Gemini CLI**     | Full Support | Mention in prompt   |
 | **GitHub Copilot** | Full Support | Chat modes          |
 
@@ -301,20 +297,17 @@ tar -xzvf aios-offline.tar.gz
 ? Which IDE(s) do you want to configure?
 ❯ ◉ Cursor
   ◉ Claude Code
-  ◯ Windsurf
 ```
 
 **Command line:**
 
 ```bash
-npx @synkra/aios-core install --ide cursor claude-code windsurf
 ```
 
 Each IDE gets its own configuration directory:
 
 - `.cursor/rules/` for Cursor
 - `.claude/commands/` for Claude Code
-- `.windsurf/rules/` for Windsurf
 
 ---
 
@@ -330,7 +323,7 @@ git clone your-repo
 cd your-repo
 
 # Optionally configure their preferred IDE
-npx @synkra/aios-core install --ide cursor
+npx aios-core install --ide cursor
 ```
 
 If `.aios-core/` is not committed:
@@ -338,7 +331,7 @@ If `.aios-core/` is not committed:
 ```bash
 git clone your-repo
 cd your-repo
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 **Best practice:** Commit `.aios-core/` to share consistent agent configurations.
@@ -394,7 +387,7 @@ npx @synkra/aios-core install
 3. **Add to IDE configuration:**
 
    ```bash
-   npx @synkra/aios-core install --ide claude-code
+   npx aios-core install --ide claude-code
    ```
 
 4. **Activate:** `/my-agent` or `@my-agent`
@@ -435,7 +428,7 @@ npx @synkra/aios-core install
 
 ### Q17: What are Squads?
 
-**Answer:** Expansion packs are optional add-ons that extend AIOS capabilities:
+**Answer:** Starter squads are optional add-ons that extend AIOS capabilities:
 
 | Pack           | Features                                                       |
 | -------------- | -------------------------------------------------------------- |
@@ -444,20 +437,20 @@ npx @synkra/aios-core install
 **Install an Squad:**
 
 ```bash
-npx @synkra/aios-core install --Squads hybrid-ops
+npx aios-core install --Squads hybrid-ops
 ```
 
 **List available packs:**
 
 ```bash
-npx @synkra/aios-core list:expansions
+npx aios-core install
 ```
 
 ---
 
 ### Q18: Can I create my own Squad?
 
-**Answer:** Yes! Expansion packs follow this structure:
+**Answer:** Yes! Starter squads follow this structure:
 
 ```
 my-expansion/
@@ -508,7 +501,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
-      - run: npx @synkra/aios-core install --full --ide claude-code
+      - run: npx aios-core install --full --ide claude-code
       - run: npm test
 ```
 
@@ -518,7 +511,7 @@ jobs:
 test:
   image: node:18
   script:
-    - npx @synkra/aios-core install --full
+    - npx aios-core install --full
     - npm test
 ```
 
@@ -584,7 +577,7 @@ projectStatus:
 - Bug fixes
 - New agents
 - Documentation improvements
-- Expansion packs
+- Starter squads
 - IDE integrations
 
 ---

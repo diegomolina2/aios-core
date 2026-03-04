@@ -58,7 +58,7 @@ describe('CLI Entry Point', () => {
       child.on('close', (code) => {
         expect(code).toBe(0);
         expect(output).toContain('USAGE');
-        expect(output).toContain('npx @synkra/aios-core');
+        expect(output).toContain('npx aios-core@latest');
         done();
       });
     });
@@ -94,7 +94,7 @@ describe('CLI Entry Point', () => {
       child.on('close', (code) => {
         // Doctor may exit with 0 or 1 depending on system state
         const combined = output + errors;
-        expect(combined).toContain('Diagnostics');
+        expect(combined).toContain('AIOS Doctor');
         done();
       });
     });
@@ -149,4 +149,3 @@ describe('CLI Entry Point', () => {
     }, 15000); // Increase timeout to 15s
   });
 });
-

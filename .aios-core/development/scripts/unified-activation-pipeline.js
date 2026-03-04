@@ -1,3 +1,6 @@
+// SYN-14: Boot time captured before ANY require — measures cold start
+const _BOOT_TIME = process.hrtime.bigint();
+
 /**
  * Unified Activation Pipeline - Single Entry Point for All 12 Agents
  *
@@ -44,12 +47,14 @@ const yaml = require('js-yaml');
 const GreetingBuilder = require('./greeting-builder');
 const { AgentConfigLoader } = require('./agent-config-loader');
 const SessionContextLoader = require('../../core/session/context-loader');
-const { loadProjectStatus } = require('../../infrastructure/scripts/project-status-loader');
+// NOG-18: loadProjectStatus removed — gitStatus is native in Claude Code system prompt.
+// const { loadProjectStatus } = require('../../infrastructure/scripts/project-status-loader');
 const GitConfigDetector = require('../../infrastructure/scripts/git-config-detector');
 const { PermissionMode } = require('../../core/permissions');
 const GreetingPreferenceManager = require('./greeting-preference-manager');
 const ContextDetector = require('../../core/session/context-detector');
 const WorkflowNavigator = require('./workflow-navigator');
+const { atomicWriteSync } = require('../../core/synapse/utils/atomic-write');
 // BUG-1 fix (INS-1): Graceful degradation when pro-detector is not available
 // In installed projects, bin/utils/pro-detector.js does not exist
 let isProAvailable, loadProModule;
@@ -79,9 +84,9 @@ const LOADER_TIERS = {
     description: 'Permission badge + branch name — visually degraded without these',
   },
   bestEffort: {
-    loaders: ['sessionContext', 'projectStatus'],
+    loaders: ['sessionContext'],
     timeout: 180,
-    description: 'Session awareness + project status — greeting works fine without these',
+    description: 'Session awareness — greeting works fine without this. NOG-18: projectStatus removed (native gitStatus)',
   },
 };
 
@@ -159,7 +164,7 @@ class UnifiedActivationPipeline {
       // Race: full pipeline vs timeout (clear timer to prevent leak)
       const { promise: timeoutPromise, timerId } = this._timeoutFallback(agentId, pipelineTimeout);
       const result = await Promise.race([
-        this._runPipeline(agentId, options, coreConfig),
+        this._runPipeline(agentId, options, coreConfig, startTime),
         timeoutPromise,
       ]);
       clearTimeout(timerId);
@@ -199,7 +204,7 @@ class UnifiedActivationPipeline {
    * @param {Object} coreConfig - Pre-loaded core config (shared, not read again)
    * @returns {Promise<{greeting: string, context: Object, quality: string, metrics: Object}>}
    */
-  async _runPipeline(agentId, options = {}, coreConfig = {}) {
+  async _runPipeline(agentId, options = {}, coreConfig = {}, startTime = Date.now()) {
     const pipelineStart = Date.now();
     const metrics = { loaders: {} };
 
@@ -276,15 +281,16 @@ class UnifiedActivationPipeline {
     const elapsedAfterT2 = Date.now() - pipelineStart;
     const tier3Remaining = Math.max(tier3Budget - elapsedAfterT2, 20);
 
-    const [sessionContext, projectStatus] = await Promise.all([
+    // NOG-18: projectStatus loader removed — gitStatus is native in Claude Code system prompt.
+    // The loadProjectStatus() function ran 5+ git commands (~76ms) duplicating native features.
+    // GreetingBuilder handles projectStatus: null gracefully (null-checks everywhere).
+    const [sessionContext] = await Promise.all([
       this._profileLoader('sessionContext', metrics, tier3Remaining, () => {
         const loader = new SessionContextLoader();
         return loader.loadContext(agentId);
       }),
-      this._profileLoader('projectStatus', metrics, tier3Remaining, () => {
-        return loadProjectStatus();
-      }),
     ]);
+    const projectStatus = null;
 
     // --- Sequential steps with data dependencies ---
 
@@ -332,6 +338,9 @@ class UnifiedActivationPipeline {
 
     // SYN-13: Write active agent to SYNAPSE session (fire-and-forget, 20ms budget)
     this._writeSynapseSession(agentId, quality, metrics);
+
+    // SYN-14: Persist UAP metrics for diagnostics (fire-and-forget)
+    this._persistUapMetrics(agentId, quality, metrics, Date.now() - startTime);
 
     return {
       greeting,
@@ -704,7 +713,7 @@ class UnifiedActivationPipeline {
       };
 
       const bridgePath = path.join(sessionsDir, '_active-agent.json');
-      fsSync.writeFileSync(bridgePath, JSON.stringify(bridgeData, null, 2), 'utf8');
+      atomicWriteSync(bridgePath, JSON.stringify(bridgeData, null, 2));
 
       const duration = Date.now() - start;
       metrics.loaders.synapseSession = { duration, status: 'ok', start, end: start + duration };
@@ -712,6 +721,50 @@ class UnifiedActivationPipeline {
       const duration = Date.now() - start;
       metrics.loaders.synapseSession = { duration, status: 'error', start, end: start + duration, error: error.message };
       console.warn(`[UnifiedActivationPipeline] SYNAPSE session write failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * SYN-14: Persist UAP metrics to .synapse/metrics/uap-metrics.json.
+   * Fire-and-forget — never blocks activation pipeline.
+   *
+   * @private
+   * @param {string} agentId - Agent ID
+   * @param {string} quality - Activation quality ('full'|'partial'|'fallback')
+   * @param {Object} metrics - Metrics object with loader timings
+   * @param {number} totalDuration - Total activation duration in ms
+   */
+  _persistUapMetrics(agentId, quality, metrics, totalDuration) {
+    try {
+      const synapsePath = path.join(this.projectRoot, '.synapse');
+      if (!fsSync.existsSync(synapsePath)) return;
+      const metricsDir = path.join(synapsePath, 'metrics');
+      if (!fsSync.existsSync(metricsDir)) {
+        fsSync.mkdirSync(metricsDir, { recursive: true });
+      }
+      const requireChainMs = typeof _BOOT_TIME !== 'undefined'
+        ? Number(process.hrtime.bigint() - _BOOT_TIME) / 1e6
+        : 0;
+      const data = {
+        agentId,
+        quality,
+        totalDuration,
+        requireChainMs,
+        loaders: {},
+        timestamp: new Date().toISOString(),
+      };
+      for (const [name, info] of Object.entries(metrics.loaders || {})) {
+        data.loaders[name] = {
+          duration: info.duration || 0,
+          status: info.status || 'unknown',
+        };
+      }
+      atomicWriteSync(
+        path.join(metricsDir, 'uap-metrics.json'),
+        JSON.stringify(data, null, 2),
+      );
+    } catch {
+      // Fire-and-forget: never block the activation pipeline
     }
   }
 
@@ -742,3 +795,21 @@ module.exports = {
   // ACT-12: Single English fallback (language delegated to Claude Code settings.json)
   FALLBACK_PHRASE,
 };
+
+// CLI entrypoint: `node unified-activation-pipeline.js <agentId>`
+if (require.main === module) {
+  const agentId = process.argv[2];
+  if (!agentId || !ALL_AGENT_IDS.includes(agentId)) {
+    console.error(`Usage: node unified-activation-pipeline.js <agentId>\nValid agents: ${ALL_AGENT_IDS.join(', ')}`);
+    process.exit(1);
+  }
+  UnifiedActivationPipeline.activate(agentId)
+    .then(result => {
+      console.log(result.greeting);
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error(`Activation error: ${err.message}`);
+      process.exit(1);
+    });
+}

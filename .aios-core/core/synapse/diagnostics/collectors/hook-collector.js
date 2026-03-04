@@ -35,9 +35,18 @@ function collectHookStatus(projectRoot) {
       const hooks = settings.hooks || {};
       const promptHooks = hooks.UserPromptSubmit || hooks.userPromptSubmit || [];
 
-      hasHookRegistered = promptHooks.some((hook) => {
-        const cmd = typeof hook === 'string' ? hook : (hook.command || '');
-        return cmd.includes('synapse-engine');
+      hasHookRegistered = promptHooks.some((entry) => {
+        // Flat format: { command: "node ..." } or string
+        const flatCmd = typeof entry === 'string' ? entry : (entry.command || '');
+        if (flatCmd.includes('synapse-engine')) return true;
+        // Nested format (Claude Code actual): { hooks: [{ type, command }] }
+        if (Array.isArray(entry.hooks)) {
+          return entry.hooks.some((h) => {
+            const cmd = typeof h === 'string' ? h : (h.command || '');
+            return cmd.includes('synapse-engine');
+          });
+        }
+        return false;
       });
 
       checks.push({
@@ -63,7 +72,7 @@ function collectHookStatus(projectRoot) {
   }
 
   // Check 2: Hook file exists
-  const hookPath = path.join(projectRoot, '.claude', 'hooks', 'synapse-engine.js');
+  const hookPath = path.join(projectRoot, '.claude', 'hooks', 'synapse-engine.cjs');
   const hookExists = fs.existsSync(hookPath);
 
   if (hookExists) {
@@ -73,7 +82,7 @@ function collectHookStatus(projectRoot) {
       checks.push({
         name: 'Hook file exists',
         status: 'PASS',
-        detail: `.claude/hooks/synapse-engine.js (${lineCount} lines, ${stat.size} bytes)`,
+        detail: `.claude/hooks/synapse-engine.cjs (${lineCount} lines, ${stat.size} bytes)`,
       });
     } catch (error) {
       checks.push({
@@ -86,7 +95,7 @@ function collectHookStatus(projectRoot) {
     checks.push({
       name: 'Hook file exists',
       status: 'FAIL',
-      detail: '.claude/hooks/synapse-engine.js not found',
+      detail: '.claude/hooks/synapse-engine.cjs not found',
     });
   }
 

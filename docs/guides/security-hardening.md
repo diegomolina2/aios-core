@@ -1288,7 +1288,7 @@ If you discover a security vulnerability in Synkra AIOS, please follow responsib
 ### Reporting Process
 
 1. **DO NOT** create a public GitHub issue for security vulnerabilities
-2. Email security concerns to: **security@synkra.ai**
+2. Report security concerns via [GitHub Security Advisories](https://github.com/SynkraAI/aios-core/security/advisories)
 3. Include the following in your report:
    - Description of the vulnerability
    - Steps to reproduce
@@ -1356,4 +1356,4 @@ Currently, Synkra AIOS does not have a formal bug bounty program. However, signi
 
 ---
 
-_Synkra AIOS Security Hardening Guide v2.1.0_
+_Synkra AIOS Security Hardening Guide v4.0.4_

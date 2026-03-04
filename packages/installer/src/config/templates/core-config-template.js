@@ -51,11 +51,14 @@ function generateCoreConfig(options = {}) {
 
     // IDE Configuration (from Story 1.4)
     ide: {
-      selected: selectedIDEs.length > 0 ? selectedIDEs : ['vscode'],
+      selected: selectedIDEs.length > 0 ? selectedIDEs : ['claude-code', 'codex'],
       configs: {
-        vscode: selectedIDEs.includes('vscode') || selectedIDEs.length === 0,
+        vscode: selectedIDEs.includes('vscode') || selectedIDEs.length === 0, // Legacy compatibility
+        codex: selectedIDEs.includes('codex'),
+        gemini: selectedIDEs.includes('gemini'),
         cursor: selectedIDEs.includes('cursor'),
-        windsurf: selectedIDEs.includes('windsurf'),
+        'github-copilot': selectedIDEs.includes('github-copilot'),
+        antigravity: selectedIDEs.includes('antigravity'),
         zed: selectedIDEs.includes('zed'),
         'claude-desktop': selectedIDEs.includes('claude-desktop'),
         'claude-code': selectedIDEs.includes('claude-code'),
@@ -165,6 +168,31 @@ function generateCoreConfig(options = {}) {
       statusFile: '.aios/project-status.yaml',
       maxModifiedFiles: 5,
       maxRecentCommits: 2,
+    },
+
+    // Boundary Protection (Epic BM — Boundary Mapping)
+    // frameworkProtection: true enforces deny rules in settings.json for L1-L4 layers
+    boundary: {
+      frameworkProtection: true,
+      // L1/L2 paths — blocked from editing in project mode
+      protected: [
+        '.aios-core/core/**',
+        '.aios-core/development/tasks/**',
+        '.aios-core/development/templates/**',
+        '.aios-core/development/checklists/**',
+        '.aios-core/development/workflows/**',
+        '.aios-core/infrastructure/**',
+        '.aios-core/constitution.md',
+        'bin/aios.js',
+        'bin/aios-init.js',
+      ],
+      // L3 paths — mutable exceptions (allowed even within .aios-core/)
+      exceptions: [
+        '.aios-core/data/**',
+        '.aios-core/development/agents/*/MEMORY.md',
+        '.aios-core/core/config/schemas/**',
+        '.aios-core/core/config/template-overrides.js',
+      ],
     },
 
     // Agent Identity Configuration

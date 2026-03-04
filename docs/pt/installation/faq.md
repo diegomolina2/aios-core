@@ -31,7 +31,7 @@
 
 ### Q1: Por que npx ao invés de npm install -g?
 
-**Resposta:** Recomendamos `npx @synkra/aios-core install` ao invés de instalação global por várias razões:
+**Resposta:** Recomendamos `npx aios-core install` ao invés de instalação global por várias razões:
 
 1. **Sempre a Versão Mais Recente**: npx baixa a versão mais recente automaticamente
 2. **Sem Poluição Global**: Não adiciona aos seus pacotes npm globais
@@ -42,8 +42,8 @@
 **Se você preferir instalação global:**
 
 ```bash
-npm install -g @synkra/aios-core
-@synkra/aios-core install
+npm install -g aios-core
+aios-core install
 ```
 
 ---
@@ -77,7 +77,7 @@ npm --version   # Deve ser 9+
 
 ```bash
 cd /path/to/existing-project
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 O instalador irá:
@@ -149,13 +149,13 @@ your-project/
 
 ```bash
 # Atualizar via npx (recomendado)
-npx @synkra/aios-core update
+npx aios-core update
 
 # Ou reinstalar a versão mais recente
-npx @synkra/aios-core install --force-upgrade
+npx aios-core install --force-upgrade
 
 # Verificar versão atual
-npx @synkra/aios-core status
+npx aios-core status
 ```
 
 **O que é atualizado:**
@@ -178,15 +178,15 @@ npx @synkra/aios-core status
 
 | Tipo de Atualização    | Frequência  | Comando                         |
 | ---------------------- | ----------- | ------------------------------- |
-| **Patches de segurança** | Imediatamente | `npx @synkra/aios-core update` |
-| **Atualizações menores** | Mensalmente | `npx @synkra/aios-core update` |
+| **Patches de segurança** | Imediatamente | `npx aios-core update` |
+| **Atualizações menores** | Mensalmente | `npx aios-core update` |
 | **Versões maiores**    | Trimestralmente | Revisar changelog primeiro    |
 
 **Verificar atualizações:**
 
 ```bash
-npm show @synkra/aios-core version
-npx @synkra/aios-core status
+npm show aios-core version
+npx aios-core status
 ```
 
 ---
@@ -198,7 +198,7 @@ npx @synkra/aios-core status
 **Opção 1: Reinstalar versão específica**
 
 ```bash
-npx @synkra/aios-core@1.1.0 install --force-upgrade
+npx aios-core@1.1.0 install --force-upgrade
 ```
 
 **Opção 2: Usar Git para restaurar**
@@ -228,7 +228,7 @@ mv .aios-core.backup .aios-core
 
 ```bash
 # Instalar uma vez com internet
-npx @synkra/aios-core install
+npx aios-core install
 
 # Empacotar para uso offline
 tar -czvf aios-offline.tar.gz .aios-core/ .claude/ .cursor/
@@ -260,7 +260,7 @@ tar -xzvf aios-offline.tar.gz
 
    ```bash
    # Instalar e empacotar
-   npx @synkra/aios-core install
+   npx aios-core install
    cd your-project
    tar -czvf aios-transfer.tar.gz .aios-core/ .claude/ .cursor/ docs/
    ```
@@ -288,10 +288,6 @@ tar -xzvf aios-offline.tar.gz
 | ------------------ | -------------- | ------------------- |
 | **Claude Code**    | Suporte Completo | `/dev`, `/qa`, etc. |
 | **Cursor**         | Suporte Completo | `@dev`, `@qa`, etc. |
-| **Windsurf**       | Suporte Completo | `@dev`, `@qa`, etc. |
-| **Trae**           | Suporte Completo | `@dev`, `@qa`, etc. |
-| **Roo Code**       | Suporte Completo | Seletor de modo     |
-| **Cline**          | Suporte Completo | `@dev`, `@qa`, etc. |
 | **Gemini CLI**     | Suporte Completo | Menção no prompt    |
 | **GitHub Copilot** | Suporte Completo | Modos de chat       |
 
@@ -309,20 +305,17 @@ tar -xzvf aios-offline.tar.gz
 ? Which IDE(s) do you want to configure?
 ❯ ◉ Cursor
   ◉ Claude Code
-  ◯ Windsurf
 ```
 
 **Linha de comando:**
 
 ```bash
-npx @synkra/aios-core install --ide cursor claude-code windsurf
 ```
 
 Cada IDE recebe seu próprio diretório de configuração:
 
 - `.cursor/rules/` para Cursor
 - `.claude/commands/` para Claude Code
-- `.windsurf/rules/` para Windsurf
 
 ---
 
@@ -338,7 +331,7 @@ git clone your-repo
 cd your-repo
 
 # Opcionalmente configurar a IDE preferida
-npx @synkra/aios-core install --ide cursor
+npx aios-core install --ide cursor
 ```
 
 Se `.aios-core/` não está commitado:
@@ -346,7 +339,7 @@ Se `.aios-core/` não está commitado:
 ```bash
 git clone your-repo
 cd your-repo
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 **Melhor prática:** Commitar `.aios-core/` para compartilhar configurações de agentes consistentes.
@@ -402,7 +395,7 @@ npx @synkra/aios-core install
 3. **Adicione à configuração da IDE:**
 
    ```bash
-   npx @synkra/aios-core install --ide claude-code
+   npx aios-core install --ide claude-code
    ```
 
 4. **Ative:** `/my-agent` ou `@my-agent`
@@ -452,13 +445,13 @@ npx @synkra/aios-core install
 **Instalar um Squad:**
 
 ```bash
-npx @synkra/aios-core install --Squads hybrid-ops
+npx aios-core install --Squads hybrid-ops
 ```
 
 **Listar packs disponíveis:**
 
 ```bash
-npx @synkra/aios-core list:expansions
+npx aios-core install
 ```
 
 ---
@@ -516,7 +509,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
-      - run: npx @synkra/aios-core install --full --ide claude-code
+      - run: npx aios-core install --full --ide claude-code
       - run: npm test
 ```
 
@@ -526,7 +519,7 @@ jobs:
 test:
   image: node:18
   script:
-    - npx @synkra/aios-core install --full
+    - npx aios-core install --full
     - npm test
 ```
 

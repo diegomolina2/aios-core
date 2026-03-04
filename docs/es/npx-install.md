@@ -18,14 +18,14 @@ Synkra AIOS puede instalarse via NPX para una configuración rápida sin instala
 
 ### Uso Correcto
 
-Siempre ejecute `npx @synkra/aios-core install` **desde el directorio de su proyecto**:
+Siempre ejecute `npx aios-core install` **desde el directorio de su proyecto**:
 
 ```bash
 # Navegue primero a su proyecto
 cd /path/to/your/project
 
 # Luego ejecute el instalador
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 ### ⚠️ Error Común
@@ -35,11 +35,11 @@ npx @synkra/aios-core install
 ```bash
 # ❌ INCORRECTO - Fallará con error de directorio temporal NPX
 cd ~
-npx @synkra/aios-core install
+npx aios-core install
 
 # ✅ CORRECTO - Navegue al proyecto primero
 cd ~/my-project
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 ## Por Qué Esto Importa
@@ -62,9 +62,9 @@ AIOS from detecting your IDE correctly.
 
 Solution:
   cd /path/to/your/project
-  npx @synkra/aios-core install
+  npx aios-core install
 
-See: https://@synkra/aios-core.dev/docs/npx-install
+See: https://aios-core.dev/docs/npx-install
 ```
 
 ## Pasos de Instalación
@@ -78,12 +78,11 @@ cd /path/to/your/project
 Su directorio de proyecto debería contener:
 - Archivos de gestión de paquetes (`package.json`, etc.)
 - Directorios de código fuente
-- Carpetas de configuración del IDE (`.cursor`, `.windsurf`, `.claude`, etc.)
 
 ### Paso 2: Ejecute el Instalador
 
 ```bash
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 ### Paso 3: Siga los Prompts Interactivos
@@ -129,7 +128,7 @@ Los usuarios de Windows típicamente no encuentran este problema, pero patrones 
    ```
 2. Vuelva a ejecutar el instalador:
    ```bash
-   npx @synkra/aios-core install
+   npx aios-core install
    ```
 
 ### Directorio de Instalación Incorrecto
@@ -143,7 +142,6 @@ Si el instalador pide una ruta de directorio:
 
 Si su IDE no es detectado después de la instalación:
 1. Verifique que ejecutó el instalador desde el directorio correcto del proyecto
-2. Verifique que existen las carpetas de configuración del IDE (`.cursor`, `.windsurf`, etc.)
 3. Vuelva a ejecutar el instalador y seleccione manualmente su IDE
 
 ## Alternativa: Instalación Global
@@ -151,9 +149,9 @@ Si su IDE no es detectado después de la instalación:
 Si prefiere no usar NPX, puede instalar globalmente:
 
 ```bash
-npm install -g @synkra/aios-core
+npm install -g aios-core
 cd /path/to/your/project
-@synkra/aios-core install
+aios-core install
 ```
 
 ## Detalles Técnicos
@@ -184,8 +182,8 @@ const patterns = [
 ## Soporte
 
 Para ayuda adicional:
-- GitHub Issues: https://github.com/SynkraAIinc/@synkra/aios-core/issues
-- Documentación: https://@synkra/aios-core.dev/docs
+- GitHub Issues: https://github.com/SynkraAIinc/aios-core/issues
+- Documentación: https://aios-core.dev/docs
 - Referencia de Story: 2.3 - NPX Installation Context Detection
 
 ---

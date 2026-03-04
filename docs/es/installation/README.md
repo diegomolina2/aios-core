@@ -35,7 +35,7 @@ Este directorio contiene documentación completa de instalación y configuració
 
 | Documento                                     | Descripción                               | Audiencia          |
 | --------------------------------------------- | ----------------------------------------- | ------------------ |
-| [Quick Start (v2.1)](./v2.1-quick-start.md)   | Configuración rápida para nuevos usuarios | Principiantes      |
+| [Quick Start (v4)](./v4-quick-start.md)   | Configuración rápida para nuevos usuarios | Principiantes      |
 | [Solución de Problemas](./troubleshooting.md) | Problemas comunes y soluciones            | Todos los usuarios |
 | [Preguntas Frecuentes](./faq.md)              | Preguntas frecuentes                      | Todos los usuarios |
 
@@ -46,13 +46,13 @@ Este directorio contiene documentación completa de instalación y configuració
 ### Nueva Instalación
 
 ```bash
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 ### Actualización
 
 ```bash
-npx @synkra/aios-core install --force-upgrade
+npx aios-core install --force-upgrade
 ```
 
 ### ¿Tiene Problemas?
@@ -88,10 +88,6 @@ npx @synkra/aios-core install --force-upgrade
 | -------------- | --------------------- |
 | Claude Code    | `/dev`, `/qa`, etc.   |
 | Cursor         | `@dev`, `@qa`, etc.   |
-| Windsurf       | `@dev`, `@qa`, etc.   |
-| Trae           | `@dev`, `@qa`, etc.   |
-| Roo Code       | Selector de modo      |
-| Cline          | `@dev`, `@qa`, etc.   |
 | Gemini CLI     | Mención en el prompt  |
 | GitHub Copilot | Modos de chat         |
 
@@ -108,5 +104,5 @@ npx @synkra/aios-core install --force-upgrade
 
 ## Soporte
 
-- **Issues de GitHub**: [@synkra/aios-core/issues](https://github.com/SynkraAI/aios-core/issues)
+- **Issues de GitHub**: [aios-core/issues](https://github.com/SynkraAI/aios-core/issues)
 - **Documentación**: [docs/](../)

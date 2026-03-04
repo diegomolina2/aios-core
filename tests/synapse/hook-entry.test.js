@@ -6,7 +6,7 @@
  *
  * @module tests/synapse/hook-entry
  * @story SYN-7 - Hook Entry Point + Registration
- * @coverage Target: >90% for synapse-engine.js
+ * @coverage Target: >90% for synapse-engine.cjs
  */
 
 const { spawn } = require('child_process');
@@ -16,7 +16,7 @@ const os = require('os');
 
 jest.setTimeout(15000);
 
-const HOOK_PATH = path.resolve(__dirname, '../../.claude/hooks/synapse-engine.js');
+const HOOK_PATH = path.resolve(__dirname, '../../.claude/hooks/synapse-engine.cjs');
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -117,7 +117,7 @@ function buildInput(cwd, overrides = {}) {
 // Test Suites
 // ---------------------------------------------------------------------------
 
-describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
+describe('SYNAPSE Hook Entry Point (synapse-engine.cjs)', () => {
   let tmpDir;
 
   afterEach(() => {
@@ -209,10 +209,11 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
       expect(stdout).toBe('');
     });
 
-    test('logs error to stderr with [synapse-hook] prefix on invalid JSON', async () => {
-      const { stderr } = await runHook('not valid json');
+    test('exits silently without stderr on invalid JSON (silent exit policy)', async () => {
+      const { stderr, code } = await runHook('not valid json');
 
-      expect(stderr).toContain('[synapse-hook]');
+      expect(code).toBe(0);
+      expect(stderr).toBe('');
     });
 
     test('exits silently when engine.process() throws', async () => {
@@ -230,7 +231,7 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
 
       expect(code).toBe(0);
       expect(stdout).toBe('');
-      expect(stderr).toContain('[synapse-hook]');
+      expect(stderr).toBe('');
     });
 
     test('exits silently when SynapseEngine constructor throws', async () => {
@@ -445,7 +446,7 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
 
       const hookEntries = settings.hooks.UserPromptSubmit;
       const synapseHook = hookEntries.find((entry) =>
-        entry.hooks && entry.hooks.some((h) => h.command && h.command.includes('synapse-engine.js')),
+        entry.hooks && entry.hooks.some((h) => h.command && h.command.includes('synapse-engine.cjs')),
       );
       expect(synapseHook).toBeDefined();
     });
@@ -456,7 +457,7 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
   // ==========================================================================
 
   describe('direct module exports (Jest coverage)', () => {
-    const hookModule = require('../../.claude/hooks/synapse-engine.js');
+    const hookModule = require('../../.claude/hooks/synapse-engine.cjs');
 
     test('exports readStdin function', () => {
       expect(typeof hookModule.readStdin).toBe('function');
@@ -605,7 +606,7 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
   // ==========================================================================
 
   describe('run() entry point', () => {
-    const hookModule = require('../../.claude/hooks/synapse-engine.js');
+    const hookModule = require('../../.claude/hooks/synapse-engine.cjs');
 
     test('run() sets safety timeout, catches errors, and exits with 0', async () => {
       const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
@@ -628,9 +629,8 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
         await new Promise((r) => setTimeout(r, 50));
 
         expect(exitSpy).toHaveBeenCalledWith(0);
-        expect(errorSpy).toHaveBeenCalledWith(
-          expect.stringContaining('[synapse-hook]'),
-        );
+        // Silent exit policy: no stderr output (prevents "hook error" in Claude Code UI)
+        expect(errorSpy).not.toHaveBeenCalled();
       } finally {
         // Restore JEST_WORKER_ID before restoring other mocks
         if (savedWorkerId !== undefined) {
@@ -664,10 +664,10 @@ describe('SYNAPSE Hook Entry Point (synapse-engine.js)', () => {
       expect(content).toContain('.synapse/cache/');
     });
 
-    test('.gitignore has exception for synapse-engine.js hook', () => {
+    test('.gitignore has exception for synapse-engine.cjs hook', () => {
       const gitignorePath = path.resolve(__dirname, '../../.gitignore');
       const content = fs.readFileSync(gitignorePath, 'utf8');
-      expect(content).toContain('!.claude/hooks/synapse-engine.js');
+      expect(content).toContain('!.claude/hooks/synapse-engine.cjs');
     });
   });
 });

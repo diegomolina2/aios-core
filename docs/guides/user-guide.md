@@ -26,11 +26,11 @@ Before using AIOS, ensure you have:
 
 ```bash
 # New project (Greenfield)
-npx @synkra/aios-core init my-project
+npx aios-core init my-project
 
 # Existing project (Brownfield)
 cd existing-project
-npx @synkra/aios-core install
+npx aios-core install
 ```
 
 ### First Steps
@@ -356,13 +356,11 @@ AIOS supports multiple IDEs. Configuration is synchronized across:
 
 - Claude Code (`.claude/`)
 - Cursor (`.cursor/`)
-- Windsurf (`.windsurf/`)
-- Cline (`.cline/`)
 - VS Code (`.vscode/`)
 
 ```bash
 # Sync agents to your IDE
-npm run sync:agents
+npm run sync:ide
 ```
 
 ---
@@ -486,4 +484,4 @@ aios squads search {keyword}
 
 ---
 
-_Synkra AIOS User Guide v2.1.0_
+_Synkra AIOS User Guide v4.2.11_

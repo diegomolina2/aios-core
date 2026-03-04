@@ -77,14 +77,14 @@ To automate the complete software release process, including:
 
 - **git_tag**: `string`
   - **Description**: Git tag created
-  - **Example**: `"v2.1.3"`
+  - **Example**: `"v4.0.4.3"`
 
 - **changelog**: `string`
   - **Description**: Generated CHANGELOG.md content for this release
 
 - **release_url**: `string`
   - **Description**: URL to GitHub/GitLab Release
-  - **Example**: `"https://github.com/user/repo/releases/tag/v2.1.3"`
+  - **Example**: `"https://github.com/user/repo/releases/tag/v4.0.4.3"`
 
 - **published_packages**: `array<object>`
   - **Description**: Published packages with URLs
@@ -120,8 +120,8 @@ To automate the complete software release process, including:
      ```
 
 3. **Analyze Commits Since Last Release**
-   - Get last version tag (e.g., `v2.1.2`)
-   - Get commits since last tag: `git log v2.1.2..HEAD`
+   - Get last version tag (e.g., `v4.0.4.2`)
+   - Get commits since last tag: `git log v4.0.4.2..HEAD`
    - Parse commit messages (Conventional Commits)
 
 4. **Determine Version Bump**
@@ -750,3 +750,10 @@ Migration: Replace /v1/users with /v2/users in API calls.
 
 - `ci-cd-configuration` - Set up CI to run before releases
 - `pr-automation` - Help users create PRs with proper commit formats
+
+## Handoff
+next_agent: @po
+next_command: *close-story {story-id}
+condition: Release published successfully
+alternatives:
+  - agent: @devops, command: *cleanup, condition: Post-release branch cleanup needed
